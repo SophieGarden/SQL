@@ -105,7 +105,8 @@ ORDER BY X
 ;
 
 
-SQLAdvanced JoinProjects
+SQLAdvanced Join
+Projects
 
 SET @rank1 = 0, @rank2 = 0;
 SELECT Start_Date, End_Date
@@ -144,3 +145,106 @@ FROM Students s JOIN Friends f using(ID)
      JOIN Packages p2 ON f.Friend_ID  = p2.ID
 WHERE p1.Salary < p2.Salary
 ORDER BY p2.Salary
+
+
+Advanced JOIN:
+
+Interviews
+
+/*
+ contest_id, hacker_id, name, and the sums of total_submissions, total_accepted_submissions, total_views, and total_unique_views for each contest sorted by contest_id.  Exclude the contest from the result if all four sums are .
+*/
+
+SELECT con.contest_id, con.hacker_id, con.name,
+        SUM(sub_s.total_submissions),
+        SUM(sub_s.total_accepted_submissions),
+        SUM(view_s.total_views),
+        SUM(view_s.total_unique_views)
+FROM Contests con
+    JOIN Colleges col ON con.contest_id = col.contest_id
+    JOIN Challenges cha ON col.college_id = cha.college_id
+    LEFT JOIN
+        (SELECT challenge_id,
+            SUM(total_views) AS total_views ,
+            SUM(total_unique_views) AS total_unique_views
+         FROM View_Stats
+         GROUP BY challenge_id
+        ) AS view_s
+        ON cha.challenge_id = view_s.challenge_id
+    LEFT JOIN
+        (SELECT challenge_id,
+            SUM(total_submissions) AS total_submissions,
+            SUM(total_accepted_submissions) AS total_accepted_submissions
+         FROM Submission_Stats
+         GROUP BY challenge_id
+        ) AS sub_s
+        ON cha.challenge_id = sub_s.challenge_id
+
+GROUP BY con.contest_id, con.hacker_id, con.name
+HAVING SUM(total_submissions) + SUM(total_accepted_submissions) +                SUM(total_views) + SUM(total_unique_views) <> 0
+ORDER BY con.contest_id
+/*
+(1) why group by within subqueries?
+
+Look at the sample input in the problem statement. In the table Challenges there is a challenge_id 18765. This ID is not present in the Submission_Stats table, but is present in the View_Stats table. So, if you do the inner join on Challenges and Submissions_Stats first, there will be no rows with challenge_id 18765 in the result set. And when you do the second inner join with Vew_Stats table, the rows with challenge_id 18765 in it will not be regarded.
+
+If you do the left join, the rows with challege_id 18765 from the Challenges table (the left table) will be preserved in the result set even if there are no rows with this id in the rgiht table.
+(2) why left join?
+the problem is here:
+
+left join view_stats vs on cha.challenge_id = vs.challenge_id left join submission_stats ss on cha.challenge_id = ss.challenge_id
+
+after left join view_stats, the result contains multiple same challenge_id causing n * m data if left join submission_stats.
+
+for example: view_stats like:
+190 33 33
+190 32 32
+submission_stats like:
+190 189 398
+
+after left join two tables, the result becomes:
+190 33 33 189 398
+190 32 32 189 398
+of course, the result is wrong.
+*/
+
+
+
+
+SQL advanced JOIN:
+15 Days of Learning SQL
+/*Write a query to print total number of unique hackers who made at least 1 submission each day (starting on the first day of the contest), and find the hacker_id and name of the hacker who made maximum number of submissions each day.
+If more than one such hacker has a maximum number of submissions, print the lowest hacker_id. The query should print this information for each day of the contest, sorted by the date.*/
+SELECT dates.submission_date,
+    (SELECT COUNT(DISTINCT hacker_id)
+     FROM Submissions s1
+     WHERE s1.submission_date = dates.submission_date
+           AND DATEDIFF(s1.submission_date, '2016-03-01')
+                = (SELECT COUNT(DISTINCT s2.submission_date)
+                   FROM Submissions s2
+                   WHERE s2.submission_date < s1.submission_date
+                         AND s2.hacker_id = s1.hacker_id
+                  )
+    ),
+
+    (SELECT hacker_id
+     FROM Submissions s3
+     WHERE s3.submission_date = dates.submission_date
+     GROUP BY hacker_id
+     ORDER BY COUNT(s3.submission_id) DESC, hacker_id ASC
+     LIMIT 1
+    ) AS top_id,
+
+    (SELECT name
+     FROM Hackers
+     WHERE hacker_id = top_id
+    )
+
+FROM (SELECT DISTINCT submission_date
+      FROM Submissions
+     ) AS dates
+ORDER BY submission_date
+
+
+/*note: DATEDIFF("2017-06-25", "2017-06-15")
+10, so use < instead of <=*/
