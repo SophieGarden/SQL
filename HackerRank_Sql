@@ -1,7 +1,34 @@
 HackerRank SQL exercise
 mostly using MySql
-Since the HackerRank MySql doesn't have window functions, so sometimes, I use MS SQL Server
+Since the HackerRank MySql version doesn't support window functions, so sometimes, I use MS SQL Server
 
+/*----------------------------------------------*/
+Advanced select:
+The PADS:
+/*Generate the following two result sets:
+
+Query an alphabetically ordered list of all names in OCCUPATIONS, immediately followed by the first letter of each profession as a parenthetical (i.e.: enclosed in parentheses). For example: AnActorName(A), ADoctorName(D), AProfessorName(P), and ASingerName(S).
+Query the number of ocurrences of each occupation in OCCUPATIONS. Sort the occurrences in ascending order, and output them in the following format:
+
+There are a total of [occupation_count] [occupation]s.
+where [occupation_count] is the number of occurrences of an occupation in OCCUPATIONS and [occupation] is the lowercase occupation name. If more than one Occupation has the same [occupation_count], they should be ordered alphabetically.
+
+Note: There will be at least two entries in the table for each type of occupation.*/
+
+SELECT CONCAT(Name,'(',LEFT(Occupation,1),')')
+FROM OCCUPATIONS
+ORDER BY Name
+;
+
+SELECT 'There are a total of ', COUNT(Occupation), CONCAT(LOWER(Occupation),'s.') AS total
+FROM OCCUPATIONS
+GROUP BY Occupation
+ORDER BY  COUNT(Occupation), Occupation
+;
+
+
+
+/*----------------------------------------------*/
 Occupations:
 
 set @r1=0, @r2=0, @r3=0, @r4=0;
@@ -32,6 +59,9 @@ FROM BST
 ORDER BY N
 ;
 
+
+
+/*----------------------------------------------*/
 New Companies:
 /*
 company_code, founder name, total number of lead managers, total number of senior managers, total number of managers, and total number of employees.
@@ -78,8 +108,7 @@ ORDER BY  COUNT(Occupation), Occupation
 ;
 
 
-
-
+/*----------------------------------------------*/
 SQL Advanced Join
 
 Symmetric Pairs
@@ -105,6 +134,8 @@ ORDER BY X
 ;
 
 
+
+/*----------------------------------------------*/
 SQLAdvanced Join
 Projects
 
@@ -147,6 +178,8 @@ WHERE p1.Salary < p2.Salary
 ORDER BY p2.Salary
 
 
+
+/*----------------------------------------------*/
 Advanced JOIN:
 
 Interviews
@@ -210,7 +243,7 @@ of course, the result is wrong.
 
 
 
-
+/*----------------------------------------------*/
 SQL advanced JOIN:
 15 Days of Learning SQL
 /*Write a query to print total number of unique hackers who made at least 1 submission each day (starting on the first day of the contest), and find the hacker_id and name of the hacker who made maximum number of submissions each day.
