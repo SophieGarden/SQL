@@ -2,6 +2,9 @@ HackerRank SQL exercise
 mostly using MySql
 Since the HackerRank MySql version doesn't support window functions, so sometimes, I use MS SQL Server
 
+
+
+
 /*----------------------------------------------*/
 Advanced select:
 The PADS:
@@ -48,6 +51,9 @@ from(
 group by RowNumber
 
 
+
+
+/*----------------------------------------------*/
 Binary Tree Nodes:
 --  IN clase only from a list of values (val1, val2,...) not a column name
 SELECT N,
@@ -94,18 +100,8 @@ WHEN (A+B> C OR A+C >B OR B+C>A) AND A <> B AND B <> C AND A <> C THEN  'Scalene
 END
 FROM TRIANGLES;
 
-The PADS:
 
-SELECT CONCAT(Name,'(',LEFT(Occupation,1),')')
-FROM OCCUPATIONS
-ORDER BY Name
-;
 
-SELECT 'There are a total of ', COUNT(Occupation), CONCAT(LOWER(Occupation),'s.') AS total
-FROM OCCUPATIONS
-GROUP BY Occupation
-ORDER BY  COUNT(Occupation), Occupation
-;
 
 
 /*----------------------------------------------*/
@@ -179,9 +175,9 @@ ORDER BY p2.Salary
 
 
 
+
 /*----------------------------------------------*/
 Advanced JOIN:
-
 Interviews
 
 /*
