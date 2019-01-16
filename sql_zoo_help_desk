@@ -1,0 +1,85 @@
+1
+SELECT Call_date
+FROM Issue
+WHERE  Detail LIKE '%index%' AND Detail LIKE '%Oracle%'
+;
+2
+SELECT Call_date, First_name, Last_name
+FROM Issue JOIN Caller USING (Caller_id)
+WHERE First_name = 'Samantha' AND Last_name = 'Hall' AND DATE(Call_date) = DATE('2017-08-14')
+;
+3
+SELECT Status,  COUNT(*) AS Volume
+FROM Issue
+GROUP BY Status
+;
+
+4
+SELECT COUNT(*)
+FROM Issue JOIN Staff ON Staff.Staff_code = Issue.Assigned_to
+           JOIN Level ON Staff.Level_code = Level.Level_code
+WHERE Level.Manager = 'Y'
+;
+
+5
+SELECT Shift_date, Shift_type, First_name, Last_name
+FROM Shift JOIN Staff ON Shift.Manager = Staff.Staff_code
+;
+
+6
+SELECT Company_name, COUNT(*)
+FROM Customer JOIN Caller USING(Company_ref)
+           JOIN Issue USING(Caller_id)
+GROUP BY Company_name
+HAVING COUNT(*) >18
+;
+
+7
+SELECT First_name, Last_name
+FROM Caller
+WHERE Caller_id NOT IN
+       (
+SELECT DISTINCT Caller_id FROM Issue
+)
+;
+
+8
+SELECT Company_name, First_name, Last_name, nc
+FROM
+(SELECT Company_name, Contact_id, COUNT(*) as nc
+FROM Customer JOIN Caller USING(Company_ref)
+           JOIN Issue USING(Caller_id)
+GROUP BY Company_name, Contact_id
+HAVING COUNT(*) <5) AS temp
+JOIN Caller ON temp.Contact_id = Caller.Caller_id
+;
+
+
+9
+SELECT Shift_date, Shift_type, COUNT(DISTINCT(role))
+
+FROM (
+    SELECT Shift_date, Shift_type, Manager AS role
+    FROM Shift
+UNION
+    SELECT Shift_date, Shift_type, Operator AS role
+    FROM Shift
+UNION
+    SELECT Shift_date, Shift_type, Engineer1 AS role
+    FROM Shift
+UNION
+    SELECT Shift_date, Shift_type, Engineer2 AS role
+    FROM Shift
+) AS temp
+
+GROUP BY Shift_date, Shift_type
+;
+
+10
+
+SELECT s.First_name, s.Last_name, Call_date
+FROM Issue JOIN Staff s ON Issue.Taken_by = s.Staff_code
+           JOIN Caller USING(Caller_id)
+WHERE Caller.First_name = 'Harry'
+ORDER BY Call_date DESC
+LIMIT 1
