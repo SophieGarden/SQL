@@ -75,6 +75,7 @@ UNION
 GROUP BY Shift_date, Shift_type
 ;
 
+
 10
 
 SELECT s.First_name, s.Last_name, Call_date
